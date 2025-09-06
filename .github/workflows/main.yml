@@ -1,0 +1,24 @@
+name: C CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Install build tools (GCC, Make, etc.)
+      - name: Install GCC
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+
+      # Step 3: Compile main.c and test.c
+      - name: Build
+        run: gcc -o test main.c test.c
+
+      # Step 4: Run tests
+      - name: Run Tests
+        run: ./test
