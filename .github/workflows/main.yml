@@ -5,20 +5,36 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
-      # Step 1: Checkout repository
+      # Check out repository code to the runner
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Install build tools (GCC, Make, etc.)
+      # Install C compiler and build tools
       - name: Install GCC
         run: sudo apt-get update && sudo apt-get install -y build-essential
 
-      # Step 3: Compile main.c and test.c
+      # Compile the C program
       - name: Build
-        run: gcc -o test main.c test.c
+        run: gcc -o test main.c
 
-      # Step 4: Run tests
-      - name: Run Tests
+      # Save the compiled binary as an artifact
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-binary
+          path: app
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build   # test depends on build
+    steps:
+      # Retrieve the compiled binary artifact from previous job
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: app-binary
+
+      # Execute the compiled program to run tests
+      - name: Run tests
         run: ./test
